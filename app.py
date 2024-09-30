@@ -1,35 +1,31 @@
-import streamlit as st 
-from langchain import PromptTemplate, LLMChain
+import streamlit as st
+from langchain import PromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 import google.generativeai as genai
-
-# Import the local environment
-from dotenv import load_dotenv # for api key storing
+from dotenv import load_dotenv  # For API key storing
 import os
+
+# Load environment variables
 load_dotenv()
 genai.configure(api_key=os.getenv("Manoj-Api-Key"))
 
+# Streamlit app layout
+st.title("Movie Recommender System")
+user_input = st.text_input("Enter the Movie Title, Genre, or Keyword:")
 
-# Design the Page ... streamlit run app.py
-header = {'authorization':st.secrets['Manoj-Api-Key'],
-          "content-type":"application/json"}
-st.title("Movie Recommender Systems")
-user_input = st.text_input("Enter the Movie Title,genre or keyword")
-
-# creating a prompt Template
-demo_template = ''' Give me movie recommendations for the following genre {prompt}'''
+# Create a prompt template
+demo_template = '''Give me movie recommendations for the following genre or keyword: {prompt}'''
 template = PromptTemplate(
-    input_variables = ['prompt'],
-    template = demo_template)
+    input_variables=['prompt'],
+    template=demo_template
+)
 
-
-# Google Gemini Model
-llm = ChatGoogleGenerativeAI(model="gemini-pro",api_key='Manoj-Api-Key')
-
+# Initialize Google Gemini model
+llm = ChatGoogleGenerativeAI(model="gemini-pro", api_key=os.getenv("Manoj-Api-Key"))
 
 if user_input:
-    prompt = template.format(user_input=user_input)
+    prompt = template.format(prompt=user_input)
     recommendations = llm.predict(text=prompt)
-    st.write(f"Recommendations: for you :\n {recommendations}")
+    st.write(f"Recommendations for you:\n{recommendations}")
 else:
-    st.write(' ')
+    st.write('Please enter a movie title, genre, or keyword to get recommendations.')
